@@ -55,7 +55,8 @@ public class LoginLogCtroller extends BaseController {
 	@RequiresPermissions("sys:loginlog:list")
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(Model model) {
-		return "/loginlog/list";
+		model.addAttribute("showField", "userId,loginTime");
+		return "/loginlog/listShowField";
 	}
 	
 	
