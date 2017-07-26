@@ -100,16 +100,16 @@ layui.use(['form','layer', 'laytpl', 'page_table', 'laydate', 'jacommon', 'tab']
 		"bInfo" : true, // 是否显示页脚分页
 		"bPaginate" : true,
 		"stateSaveParams": function () {           // 初始化完成调用事件
-			 
+			var fnames = ['userId','loginTime','loginIp','loginType','loginDesc'];
+			jacommon.addTableColumnNames(fnames);
+			jacommon.hideTableColumns(showField);
 		},
 		"fnRowCallback" : function(row, data, index) {
 			return row;
 		},
 		"initComplete": function () {
 			//$('#dataTable tr').find('td:eq(0)').hide();
-			//$('#dataTable tr').find('th:eq(0)').hide();
-			//alert(showField);
-			
+			//$('#dataTable th').find('th:eq(0)').hide();
 		},
 		"footerCallback": function (row, data, start, end, display ) {
 		}
