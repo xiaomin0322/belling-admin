@@ -127,6 +127,9 @@ layui.define(['layer'], function (exports) {
 		if(name==null){
 			name = 'fname';
 		}
+		if(columnNames==null){
+			return ;
+		}
 		var fnames = columnNames;
 		fnames.forEach(function(item,index){
 			 $('#dataTable tr').each(function(i){
@@ -141,7 +144,7 @@ layui.define(['layer'], function (exports) {
 		if(name==null){
 			name = 'fname';
 		}
-		if(showField!=null){
+		if(showField!=null && showField!=''){
 			  $('#dataTable tr').children().each(function(j,obj){
 				  var fnametd = $(obj).attr(name);
 				  if(fnametd!=null && showField.indexOf(fnametd) == -1){
