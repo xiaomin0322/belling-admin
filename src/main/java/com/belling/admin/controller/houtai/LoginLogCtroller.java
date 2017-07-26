@@ -1,9 +1,12 @@
 package com.belling.admin.controller.houtai;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.belling.admin.model.LoginLog;
+import com.belling.admin.model.Permission;
+import com.belling.admin.model.User;
 import com.belling.admin.service.LoginLogService;
+import com.belling.admin.service.PermissionService;
 import com.belling.base.controller.BaseController;
 import com.belling.base.model.Pagination;
 import com.belling.base.model.ResponseResult;
 import com.belling.base.model.TablePageResult;
+import com.belling.base.util.ServletUtil;
 import com.google.common.base.Strings;
 
 /**  
@@ -45,6 +52,12 @@ public class LoginLogCtroller extends BaseController {
 	@Autowired
 	private LoginLogService loginLogService;
 	
+	/**
+	 * 权限业务对象
+	 */
+	@Autowired
+	private PermissionService permissionService;
+	
 	
 	/**
 	 * 日志列表首页
@@ -55,8 +68,35 @@ public class LoginLogCtroller extends BaseController {
 	@RequiresPermissions("sys:loginlog:list")
 	@RequestMapping(method = RequestMethod.GET)
 	public String index(Model model) {
-		model.addAttribute("showField", "userId,loginTime");
+		model.addAttribute("showField",findPermissionByUserIdShowField("sys:loginlog:list"));
 		return "/loginlog/listShowField";
+	}
+	/**
+	 * 获取匹配的显示字段字符串
+	 * @param permissionPrefix
+	 * @return String
+	 */
+	public String findPermissionByUserIdShowField(String permissionPrefix){
+		User user = (User)ServletUtil.getSession().getAttribute("user");
+		List<Permission> permissions = permissionService.findListByUserId(user.getId());
+		StringBuilder showFieldBuilder = new StringBuilder();
+		if(CollectionUtils.isNotEmpty(permissions)){
+			for(Permission perm:permissions){	
+				if(perm == null){
+					continue;
+				}
+				//权限标志
+				String permission = perm.getPermission();
+				if(StringUtils.isNotBlank(permission) && permission.startsWith(permissionPrefix) && !permissionPrefix.equalsIgnoreCase(permission)){
+					String url   = perm.getUrl();
+					if(StringUtils.isNotBlank(url)){
+						showFieldBuilder.append(url).append(",");
+					}
+				}
+			}
+		}
+		System.out.println("findPermissionByUserIdShowField permissionPrefix : "+permissionPrefix+" showFieldBuilder : "+showFieldBuilder.toString());
+		return showFieldBuilder.toString();
 	}
 	
 	
