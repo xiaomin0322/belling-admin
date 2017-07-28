@@ -82,7 +82,10 @@ public class RoleController extends BaseController {
         OutputStream out=null;  
         //设置响应  
         response.setHeader("Content-Disposition", "attachment;filename=" + destFileName);  
-        response.setContentType("application/vnd.ms-excel");  
+        //response.setContentType("application/vnd.ms-excel");  
+        //response.setContentType("application/x-download");
+        //response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.setContentType("application/octet-stream");
         try {  
             in=new BufferedInputStream(new FileInputStream(JxlsUtils.getTemplate(templateFileName)));  
             out=response.getOutputStream();  
