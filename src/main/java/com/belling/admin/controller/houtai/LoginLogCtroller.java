@@ -76,26 +76,54 @@ public class LoginLogCtroller extends BaseController {
 	 * @param permissionPrefix
 	 * @return String
 	 */
-	public String findPermissionByUserIdShowField(String permissionPrefix){
-		User user = (User)ServletUtil.getSession().getAttribute("user");
-		List<Permission> permissions = permissionService.findListByUserId(user.getId());
+	public String findPermissionByUserIdShowField(String permissionPrefix) {
+		User user = (User) ServletUtil.getSession().getAttribute("user");
+		List<Permission> permissions = permissionService.findListByUserId(user
+				.getId());
+		//当前权限对象
+		Permission permissionPrefixObj = null;
+		for (Permission p : permissions) {
+			if (p == null) {
+				continue;
+			}
+			// 权限标志
+			String permission = p.getPermission();
+			//根据权限标示，获取当前权限对象
+			if (permissionPrefix.equalsIgnoreCase(permission)) {
+				permissionPrefixObj = p;
+			}
+		}
 		StringBuilder showFieldBuilder = new StringBuilder();
-		if(CollectionUtils.isNotEmpty(permissions)){
-			for(Permission perm:permissions){	
-				if(perm == null){
-					continue;
-				}
-				//权限标志
-				String permission = perm.getPermission();
-				if(StringUtils.isNotBlank(permission) && permission.startsWith(permissionPrefix) && !permissionPrefix.equalsIgnoreCase(permission)){
-					String url   = perm.getUrl();
-					if(StringUtils.isNotBlank(url)){
-						showFieldBuilder.append(url).append(",");
+		if (permissionPrefixObj != null) {
+			if (CollectionUtils.isNotEmpty(permissions)) {
+				for (Permission perm : permissions) {
+					if (perm == null) {
+						continue;
+					}
+					// 权限标志
+					String permission = perm.getPermission();
+					Integer pid = perm.getPId();
+					//如果是当前权限下的子权限，并且是以当前权限标志打头的，则是配置字段
+					if (permissionPrefixObj.getId().intValue() == pid
+							.intValue()
+							&& StringUtils.isNotBlank(permission)
+							&& permission.startsWith(permissionPrefix)
+							&& !permissionPrefix.equalsIgnoreCase(permission)) {
+						String url = perm.getUrl();
+						if (StringUtils.isNotBlank(url)) {
+							showFieldBuilder.append(url).append(",");
+						}
 					}
 				}
 			}
+			System.out
+					.println("findPermissionByUserIdShowField permissionPrefix : "
+							+ permissionPrefix
+							+ " showFieldBuilder : "
+							+ showFieldBuilder.toString());
+
 		}
-		System.out.println("findPermissionByUserIdShowField permissionPrefix : "+permissionPrefix+" showFieldBuilder : "+showFieldBuilder.toString());
+
 		return showFieldBuilder.toString();
 	}
 	
