@@ -52,12 +52,6 @@ public class LoginLogCtroller extends BaseController {
 	@Autowired
 	private LoginLogService loginLogService;
 	
-	/**
-	 * 权限业务对象
-	 */
-	@Autowired
-	private PermissionService permissionService;
-	
 	
 	/**
 	 * 日志列表首页
@@ -70,63 +64,6 @@ public class LoginLogCtroller extends BaseController {
 	public String index(Model model) {
 		model.addAttribute("showField",findPermissionByUserIdShowField("sys:loginlog:list"));
 		return "/loginlog/listShowField";
-	}
-	/**
-	 * 获取匹配的显示字段字符串
-	 * @param permissionPrefix
-	 * @return String
-	 */
-	public String findPermissionByUserIdShowField(String permissionPrefix) {
-		User user = (User) ServletUtil.getSession().getAttribute("user");
-		List<Permission> permissions = permissionService.findListByUserId(user
-				.getId());
-		StringBuilder showFieldBuilder = new StringBuilder();
-		if (CollectionUtils.isEmpty(permissions)) {
-			return showFieldBuilder.toString();
-		}
-		//当前权限对象
-		Permission permissionPrefixObj = null;
-		for (Permission p : permissions) {
-			if (p == null) {
-				continue;
-			}
-			// 权限标志
-			String permission = p.getPermission();
-			//根据权限标示，获取当前权限对象
-			if (permissionPrefix.equalsIgnoreCase(permission)) {
-				permissionPrefixObj = p;
-			}
-		}
-		
-		if (permissionPrefixObj != null) {
-				for (Permission perm : permissions) {
-					if (perm == null) {
-						continue;
-					}
-					// 权限标志
-					String permission = perm.getPermission();
-					Integer pid = perm.getPId();
-					//如果是当前权限下的子权限，并且是以当前权限标志打头的，则是配置字段
-					if (pid!=null && permissionPrefixObj.getId().intValue() == pid
-							.intValue()
-							&& StringUtils.isNotBlank(permission)
-							&& permission.startsWith(permissionPrefix)
-							&& !permissionPrefix.equalsIgnoreCase(permission)) {
-						String url = perm.getUrl();
-						if (StringUtils.isNotBlank(url)) {
-							showFieldBuilder.append(url).append(",");
-						}
-					}
-				}
-			System.out
-					.println("findPermissionByUserIdShowField permissionPrefix : "
-							+ permissionPrefix
-							+ " showFieldBuilder : "
-							+ showFieldBuilder.toString());
-
-		}
-
-		return showFieldBuilder.toString();
 	}
 	
 	
