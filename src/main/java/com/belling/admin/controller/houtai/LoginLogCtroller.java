@@ -80,6 +80,10 @@ public class LoginLogCtroller extends BaseController {
 		User user = (User) ServletUtil.getSession().getAttribute("user");
 		List<Permission> permissions = permissionService.findListByUserId(user
 				.getId());
+		StringBuilder showFieldBuilder = new StringBuilder();
+		if (CollectionUtils.isEmpty(permissions)) {
+			return showFieldBuilder.toString();
+		}
 		//当前权限对象
 		Permission permissionPrefixObj = null;
 		for (Permission p : permissions) {
@@ -93,9 +97,8 @@ public class LoginLogCtroller extends BaseController {
 				permissionPrefixObj = p;
 			}
 		}
-		StringBuilder showFieldBuilder = new StringBuilder();
+		
 		if (permissionPrefixObj != null) {
-			if (CollectionUtils.isNotEmpty(permissions)) {
 				for (Permission perm : permissions) {
 					if (perm == null) {
 						continue;
@@ -115,7 +118,6 @@ public class LoginLogCtroller extends BaseController {
 						}
 					}
 				}
-			}
 			System.out
 					.println("findPermissionByUserIdShowField permissionPrefix : "
 							+ permissionPrefix
