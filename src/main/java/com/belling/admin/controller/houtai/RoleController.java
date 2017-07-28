@@ -2,6 +2,7 @@ package com.belling.admin.controller.houtai;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -74,7 +76,7 @@ public class RoleController extends BaseController {
         model.put("roles", rolesList);
         model.put("nowdate", new Date());
         
-	    String destFileName = "target/roles_template_output.xls";
+	    String destFileName = "roles_template_output.xls";
 	    String templateFileName = "roles_template.xls";
 	    InputStream in=null;  
         OutputStream out=null;  
@@ -82,8 +84,11 @@ public class RoleController extends BaseController {
         response.setHeader("Content-Disposition", "attachment;filename=" + destFileName);  
         response.setContentType("application/vnd.ms-excel");  
         try {  
-            in=new BufferedInputStream(new FileInputStream(templateFileName));  
+            in=new BufferedInputStream(new FileInputStream(JxlsUtils.getTemplate(templateFileName)));  
             out=response.getOutputStream();  
+            //FileOutputStream fileOutputStream = new FileOutputStream(destFileName);
+            //JxlsUtils.exportExcel(in,fileOutputStream,model);
+            //out.write(IOUtils.toByteArray(new FileInputStream(destFileName)));
             JxlsUtils.exportExcel(in,out,model);
             //将内容写入输出流并把缓存的内容全部发出去  
             out.flush();  
