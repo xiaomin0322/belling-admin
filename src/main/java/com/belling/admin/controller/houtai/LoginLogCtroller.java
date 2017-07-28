@@ -104,7 +104,7 @@ public class LoginLogCtroller extends BaseController {
 					String permission = perm.getPermission();
 					Integer pid = perm.getPId();
 					//如果是当前权限下的子权限，并且是以当前权限标志打头的，则是配置字段
-					if (permissionPrefixObj.getId().intValue() == pid
+					if (pid!=null && permissionPrefixObj.getId().intValue() == pid
 							.intValue()
 							&& StringUtils.isNotBlank(permission)
 							&& permission.startsWith(permissionPrefix)
